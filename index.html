@@ -14,41 +14,67 @@
         </div>
 
         <div id="setup-page" class="card">
-            <h2>Create Profile</h2>
+            <h2>Bio-Profile</h2>
             <form id="user-form">
-                <input type="text" id="profile-name" placeholder="Profile Name" required>
-                <input type="number" id="age" placeholder="Age" required>
-                <input type="number" id="height" placeholder="Height (cm)" required>
-                <input type="number" id="weight" placeholder="Weight (kg)" required>
-                <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
-                <select id="activity">
-                    <option value="sedentary">Sedentary</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="active">Active</option>
-                </select>
-                <button type="submit" class="primary-btn">Start</button>
+                <div class="input-group">
+                    <label>Profile Name</label>
+                    <input type="text" id="profile-name" placeholder="e.g. My Diet" required>
+                </div>
+                <div class="input-group">
+                    <label>Age</label>
+                    <input type="number" id="age" required>
+                </div>
+                <div class="input-group">
+                    <label>Height (cm)</label>
+                    <input type="number" id="height" required>
+                </div>
+                <div class="input-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="weight" required>
+                </div>
+                <div class="input-group">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Activity</label>
+                    <select id="activity">
+                        <option value="sedentary">Sedentary</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="active">Active</option>
+                    </select>
+                </div>
+                <button type="submit" class="primary-btn">Create Plan</button>
             </form>
         </div>
 
         <div id="profile-manager" class="card" style="display:none;">
             <h3>Profiles</h3>
             <div id="profile-list"></div>
-            <button onclick="showSetup()" class="primary-btn">+ New</button>
+            <button onclick="showSetup()" class="primary-btn" style="margin-top:15px;">+ Create New</button>
         </div>
 
         <div id="main-app" class="card" style="display:none;">
-            <div id="news-ticker" class="ticker">RESEARCH: Caloric deficit drives fat loss.</div>
+            <div id="news-ticker" class="ticker">RESEARCH: Analyzing metabolism...</div>
+            
             <div class="circle-container">
-                <div class="progress-circle"><h1 id="cals-left">0</h1><span>kcal left</span></div>
+                <div class="progress-circle">
+                    <h1 id="cals-left">0</h1>
+                    <span>kcal left</span>
+                </div>
             </div>
+
             <div class="stats-row">
-                <div class="stat-item"><small>Goal</small><br><b id="daily-goal-text">0</b></div>
+                <div class="stat-item"><small>Daily Goal</small><br><b id="daily-goal-text">0</b></div>
                 <div class="stat-item"><small>Eaten</small><br><b id="eaten-text">0</b></div>
             </div>
 
             <div class="search-section">
                 <div class="search-bar">
-                    <input type="text" id="query" placeholder="Search (e.g. Bread)">
+                    <input type="text" id="query" placeholder="Search food...">
                     <button id="search-btn">Find</button>
                 </div>
                 <div id="search-results" class="results-dropdown"></div>
@@ -60,17 +86,19 @@
                 <div class="meal-block"><h5>Dinner</h5><div id="log-dinner"></div></div>
                 <div class="meal-block"><h5>Snacks</h5><div id="log-snacks"></div></div>
             </div>
+
+            <button onclick="localStorage.clear(); location.reload();" class="reset-btn">Reset App</button>
         </div>
     </div>
 
     <div id="portion-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <h4 id="selected-food-name"></h4>
-            <div class="input-row" style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px; margin: 10px 0;">
                 <input type="number" id="amount-input" value="1">
                 <select id="unit-selector">
-                    <option value="units">Units (pcs)</option>
-                    <option value="grams">Grams (g)</option>
+                    <option value="units">Units</option>
+                    <option value="grams">Grams</option>
                 </select>
             </div>
             <select id="meal-type">
@@ -80,8 +108,8 @@
                 <option value="snacks">Snacks</option>
             </select>
             <div style="display:flex; gap:10px; margin-top:15px;">
-                <button onclick="closeModal()" style="background:#eee;">Cancel</button>
-                <button onclick="confirmLog()" class="primary-btn">Log</button>
+                <button onclick="closeModal()" style="background:#eee; flex:1; border:none; padding:10px; border-radius:10px;">Cancel</button>
+                <button onclick="confirmLog()" class="primary-btn" style="flex:1;">Log Food</button>
             </div>
         </div>
     </div>

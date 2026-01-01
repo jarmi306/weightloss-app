@@ -12,17 +12,18 @@ let db = JSON.parse(localStorage.getItem('bio_vault')) || {
 let tempFood = null;
 
 const facts = [
-    "Protein is the most thermogenic macronutrient, burning more energy to digest.",
-    "Walking after a meal improves glucose clearance and aids digestion.",
-    "The 'whole unit' calorie count is an estimate; grams are always more accurate.",
-    "Consistent sleep (7-8 hours) regulates hunger hormones like Ghrelin.",
-    "Hydration is key: Your brain often confuses thirst with hunger."
+    "Protein is the most thermogenic macronutrient.",
+    "Walking after a meal improves glucose clearance.",
+    "Hydration: Your brain often confuses thirst with hunger.",
+    "Consistent sleep regulates hunger hormones.",
+    "Fiber intake is linked to lower abdominal fat."
 ];
 
 // --- INITIALIZATION ---
 function init() {
+    console.log("App Initializing...");
     if (db.activeIndex !== null && db.profiles[db.activeIndex]) {
-        renderDashboard();
+        showDashboard();
     } else if (db.profiles.length > 0) {
         showManager();
     } else {
@@ -49,36 +50,50 @@ function showDashboard() {
     document.getElementById('profile-manager').style.display = 'none';
     document.getElementById('main-app').style.display = 'block';
     document.getElementById('profile-nav').style.display = 'flex';
-    startTicker();
     renderDashboard();
 }
 
 // --- CORE ACTIONS ---
-document.getElementById('user-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const profile = {
-        name: document.getElementById('profile-name').value,
-        age: Number(document.getElementById('age').value),
-        height: Number(document.getElementById('height').value),
-        weight: Number(document.getElementById('weight').value),
-        gender: document.getElementById('gender').value,
-        activity: document.getElementById('activity').value,
-        eaten: 0,
-        log: []
-    };
-    const results = calculateTDEE(profile);
-    profile.dailyGoal = results.target;
-    db.profiles.push(profile);
-    db.activeIndex = db.profiles.length - 1;
-    saveAndRefresh();
-});
+const userForm = document.getElementById('user-form');
+if (userForm) {
+    userForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        console.log("Form submitted, calculating...");
 
+        try {
+            const profile = {
+                name: document.getElementById('profile-name').value,
+                age: Number(document.getElementById('age').value),
+                height: Number(document.getElementById('height').value),
+                weight: Number(document.getElementById('weight').value),
+                gender: document.getElementById('gender').value,
+                activity: document.getElementById('activity').value,
+                eaten: 0,
+                log: []
+            };
+
+            const results = calculateTDEE(profile);
+            profile.dailyGoal = results.target;
+            
+            db.profiles.push(profile);
+            db.activeIndex = db.profiles.length - 1;
+            
+            console.log("Profile created:", profile.name);
+            saveAndRefresh();
+        } catch (err) {
+            console.error("Profile Creation Error:", err);
+            alert("Error creating profile. Check the console.");
+        }
+    });
+}
+
+// --- FOOD SEARCH ---
 window.searchFood = async () => {
     const query = document.getElementById('query').value;
     const resDiv = document.getElementById('search-results');
     if (!query) return;
 
-    resDiv.innerHTML = "<p>Researching food data...</p>";
+    resDiv.innerHTML = "<p>Searching research database...</p>";
     
     try {
         const res = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${API_KEY}&query=${query}&pageSize=5`);
@@ -90,12 +105,12 @@ window.searchFood = async () => {
             return `
                 <div class="result-item" onclick="openPortionModal('${encodeURIComponent(food.description)}', ${cals}, ${uWeight})">
                     <span>${food.description}</span>
-                    <small>${cals} kcal/100g (~${uWeight}g serving)</small>
+                    <small>${cals} kcal/100g (~${uWeight}g unit)</small>
                 </div>
             `;
         }).join('');
     } catch (err) {
-        resDiv.innerHTML = "<p>Connection error.</p>";
+        resDiv.innerHTML = "<p>Search failed. Check internet.</p>";
     }
 };
 
@@ -103,7 +118,6 @@ window.openPortionModal = (name, cals, uWeight) => {
     tempFood = { name: decodeURIComponent(name), calsPer100: cals, uWeight: uWeight };
     document.getElementById('selected-food-name').innerText = tempFood.name;
     document.getElementById('portion-modal').style.display = 'flex';
-    document.getElementById('search-results').innerHTML = ""; 
 };
 
 window.confirmLog = () => {
@@ -141,6 +155,60 @@ window.removeLog = (id) => {
 window.closeModal = () => document.getElementById('portion-modal').style.display = 'none';
 
 function renderDashboard() {
-    showDashboard();
     const user = db.profiles[db.activeIndex];
     document.getElementById('current-user-name').innerText = user.name;
+    document.getElementById('cals-left').innerText = user.dailyGoal - user.eaten;
+    document.getElementById('eaten-text').innerText = user.eaten;
+    document.getElementById('daily-goal-text').innerText = user.dailyGoal;
+
+    const meals = ['breakfast', 'lunch', 'dinner', 'snacks'];
+    meals.forEach(m => {
+        const container = document.getElementById(`log-${m}`);
+        if (container) {
+            container.innerHTML = user.log.filter(i => i.meal === m).map(i => `
+                <div class="log-item">
+                    <span>${i.name.substring(0,25)}... <small>(${i.display})</small></span>
+                    <div>
+                        <b>${i.cals}</b>
+                        <button class="del-btn" onclick="removeLog(${i.id})">×</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    });
+}
+
+function renderProfileList() {
+    const list = document.getElementById('profile-list');
+    list.innerHTML = db.profiles.map((p, i) => `
+        <div class="profile-item" onclick="selectProfile(${i})">
+            <b>${p.name}</b><br><small>${p.weight}kg | Goal: ${p.dailyGoal} kcal</small>
+        </div>
+    `).join('');
+}
+
+window.selectProfile = (i) => { db.activeIndex = i; saveAndRefresh(); };
+
+// Fact Ticker Logic
+let factIdx = 0;
+setInterval(() => {
+    const ticker = document.getElementById('news-ticker');
+    if (ticker) {
+        ticker.innerText = `RESEARCH: ${facts[factIdx]}`;
+        factIdx = (factIdx + 1) % facts.length;
+    }
+}, 8000);
+
+function saveAndRefresh() {
+    localStorage.setItem('bio_vault', JSON.stringify(db));
+    location.reload(); 
+}
+
+// Event bindings
+const searchBtn = document.getElementById('search-btn');
+if (searchBtn) searchBtn.onclick = window.searchFood;
+
+const managerBtn = document.getElementById('manager-btn');
+if (managerBtn) managerBtn.onclick = window.showManager;
+
+init();

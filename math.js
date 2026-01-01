@@ -1,9 +1,9 @@
 export const calculateTDEE = (p) => {
-    // 1. BMR (Mifflin-St Jeor)
+    // BMR Calculation (Mifflin-St Jeor)
     let bmr = (10 * p.weight) + (6.25 * p.height) - (5 * p.age);
     bmr = (p.gender === 'male') ? bmr + 5 : bmr - 161;
 
-    // 2. Activity Multipliers
+    // Activity Multipliers
     const factors = { 
         sedentary: 1.2, 
         moderate: 1.55, 
@@ -12,7 +12,7 @@ export const calculateTDEE = (p) => {
     
     const tdee = Math.round(bmr * (factors[p.activity] || 1.2));
     
-    // 3. Weight Loss Deficit (Standard -500kcal)
+    // Weight Loss Deficit (Standard -500kcal)
     return {
         maintenance: tdee,
         target: tdee - 500
