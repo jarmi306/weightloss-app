@@ -1,0 +1,13 @@
+:root { --green: #4CAF50; --bg: #f9f9f9; --text: #333; }
+body { background: var(--bg); font-family: sans-serif; color: var(--text); padding: 20px; }
+.container { max-width: 400px; margin: auto; }
+.card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+button { background: var(--green); color: white; font-weight: bold; border: none; }
+.progress-circle { width: 140px; height: 140px; border: 8px solid var(--green); border-radius: 50%; margin: 0 auto 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#cals-remaining { font-size: 2rem; font-weight: bold; }
+body { background: #f0f2f5; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+.card { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+button { background: #4CAF50; color: white; border: none; font-weight: bold; cursor: pointer; }
+.circle { width: 180px; height: 180px; border: 10px solid #4CAF50; border-radius: 50%; margin: 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
