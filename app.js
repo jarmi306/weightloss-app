@@ -1,7 +1,10 @@
 import { calculateTDEE } from './math.js';
 
+// --- CONFIG ---
+// Replace 'YOUR_USDA_KEY_HERE' with your actual key from the USDA website
 const API_KEY = 'LEqFvTAubP3u0ftrVH4bidUvtaQzCMCsuHIt9D1j'; 
 
+// --- STATE MANAGEMENT ---
 let db = JSON.parse(localStorage.getItem('bio_vault')) || {
     profiles: [],
     activeIndex: null
@@ -9,7 +12,15 @@ let db = JSON.parse(localStorage.getItem('bio_vault')) || {
 
 let tempFood = null;
 
-// --- NAVIGATION & INIT ---
+const facts = [
+    "Drinking water before meals can increase satiety by 12%.",
+    "High-protein breakfasts reduce cravings throughout the day.",
+    "Walking after meals improves glucose clearance by 12%.",
+    "Sleep deprivation increases cravings for calorie-dense foods.",
+    "Consistent fiber intake is linked to lower abdominal fat."
+];
+
+// --- INITIALIZATION ---
 function init() {
     if (db.activeIndex !== null && db.profiles[db.activeIndex]) {
         showDashboard();
@@ -20,6 +31,7 @@ function init() {
     }
 }
 
+// --- NAVIGATION ---
 window.showSetup = () => {
     document.getElementById('setup-page').style.display = 'block';
     document.getElementById('main-app').style.display = 'none';
@@ -38,10 +50,11 @@ function showDashboard() {
     document.getElementById('profile-manager').style.display = 'none';
     document.getElementById('main-app').style.display = 'block';
     document.getElementById('profile-nav').style.display = 'flex';
+    startTicker();
     renderDashboard();
 }
 
-// --- CORE PROFILE LOGIC ---
+// --- CORE PROFILE ACTIONS ---
 document.getElementById('user-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const profile = {
@@ -54,20 +67,27 @@ document.getElementById('user-form').addEventListener('submit', (e) => {
         eaten: 0,
         log: []
     };
+
     const results = calculateTDEE(profile);
     profile.dailyGoal = results.target;
+    
     db.profiles.push(profile);
     db.activeIndex = db.profiles.length - 1;
     saveAndRefresh();
 });
 
-// --- REAL-TIME SEARCH & PORTION FETCH ---
+window.selectProfile = (index) => {
+    db.activeIndex = index;
+    saveAndRefresh();
+};
+
+// --- REAL-TIME SEARCH & PORTION LOGIC ---
 window.searchFood = async () => {
     const query = document.getElementById('query').value;
     const resDiv = document.getElementById('search-results');
     if (!query) return;
 
-    resDiv.innerHTML = "<p>Scanning real-time database...</p>";
+    resDiv.innerHTML = "<p>Scanning research database...</p>";
     
     try {
         const res = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${API_KEY}&query=${query}&pageSize=8`);
@@ -75,7 +95,6 @@ window.searchFood = async () => {
         
         resDiv.innerHTML = data.foods.map(food => {
             const cals = food.foodNutrients.find(n => n.nutrientId === 1008)?.value || 0;
-            // We pass the FDC ID to the next function to get deep details
             return `
                 <div class="result-item" onclick="fetchFoodDetails(${food.fdcId}, '${encodeURIComponent(food.description)}', ${cals})">
                     <span>${food.description}</span>
@@ -84,7 +103,7 @@ window.searchFood = async () => {
             `;
         }).join('');
     } catch (err) {
-        resDiv.innerHTML = "<p>Search failed.</p>";
+        resDiv.innerHTML = "<p>Search failed. Check connection.</p>";
     }
 };
 
@@ -92,29 +111,29 @@ window.fetchFoodDetails = async (fdcId, name, cals) => {
     const modal = document.getElementById('portion-modal');
     const unitSelector = document.getElementById('unit-selector');
     
-    // Reset selector
-    unitSelector.innerHTML = '<option value="grams">Grams (g)</option>';
+    // Reset selector and add basic Grams option
+    unitSelector.innerHTML = '<option value="1">Grams (g)</option>';
     
     try {
-        // Fetch deep details for this specific food item
         const res = await fetch(`https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${API_KEY}`);
         const detail = await res.json();
         
-        let unitWeight = 100; // Default fallback
-
-        // Real-time extraction of portion data (slices, pieces, cups, etc.)
         if (detail.foodPortions && detail.foodPortions.length > 0) {
             detail.foodPortions.forEach(p => {
                 const weight = p.gramWeight;
-                const label = p.modifier || p.measureUnit?.name || "Unit";
+                // FIX: Check for readable modifier, else use unit name, else fallback to 'Portion'
+                let label = p.modifier || (p.measureUnit && p.measureUnit.name) || "Portion";
+                
+                // If the label is just a random USDA number/ID, rename it for clarity
+                if (!isNaN(label) || label.length > 15) {
+                    label = "Standard Serving";
+                }
+
                 const opt = document.createElement('option');
                 opt.value = weight;
                 opt.textContent = `${label} (${weight}g)`;
                 unitSelector.appendChild(opt);
             });
-            // Default to the first found real-world unit
-            unitWeight = detail.foodPortions[0].gramWeight;
-            unitSelector.value = unitWeight;
         }
 
         tempFood = { name: decodeURIComponent(name), calsPer100: cals };
@@ -131,13 +150,10 @@ window.confirmLog = () => {
     const amount = Number(document.getElementById('amount-input').value);
     const selectedWeight = Number(document.getElementById('unit-selector').value);
     const meal = document.getElementById('meal-type').value;
+    const selectorText = document.getElementById('unit-selector').options[document.getElementById('unit-selector').selectedIndex].text;
     
-    // If user chose grams, weight will be handled as 1g per unit essentially
-    // But our selector now holds the gram weight of the unit chosen
-    let totalGrams = (document.getElementById('unit-selector').options[document.getElementById('unit-selector').selectedIndex].text.includes("Grams")) 
-        ? amount 
-        : amount * selectedWeight;
-
+    // Calculation: If 'Grams (g)' is selected, selectedWeight is 1. If a unit is selected, it multiplies by that unit's gram weight.
+    let totalGrams = (selectorText.includes("Grams")) ? amount : amount * selectedWeight;
     let finalCals = Math.round(tempFood.calsPer100 * (totalGrams / 100));
 
     const user = db.profiles[db.activeIndex];
@@ -147,14 +163,14 @@ window.confirmLog = () => {
         name: tempFood.name,
         cals: finalCals,
         meal: meal,
-        display: `${amount} × ${document.getElementById('unit-selector').options[document.getElementById('unit-selector').selectedIndex].text}`
+        display: `${amount} × ${selectorText}`
     });
 
     closeModal();
     saveAndRefresh();
 };
 
-// --- UTILS ---
+// --- UTILS & RENDERING ---
 window.removeLog = (id) => {
     const user = db.profiles[db.activeIndex];
     const idx = user.log.findIndex(i => i.id === id);
@@ -177,11 +193,11 @@ function renderDashboard() {
     ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(m => {
         const container = document.getElementById(`log-${m}`);
         container.innerHTML = user.log.filter(i => i.meal === m).map(i => `
-            <div class="log-item" style="display:flex; justify-content:space-between; align-items:center; padding: 5px 0; border-bottom: 1px solid #f9f9f9;">
-                <span style="font-size: 0.85rem;">${i.name.substring(0, 22)}...<br><small style="color:gray">${i.display}</small></span>
+            <div class="log-item" style="display:flex; justify-content:space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                <span style="font-size: 0.8rem;">${i.name.substring(0, 20)}...<br><small style="color:gray">${i.display}</small></span>
                 <div>
-                    <b style="color:var(--primary)">${i.cals}</b>
-                    <button class="del-btn" onclick="removeLog(${i.id})">×</button>
+                    <b style="color:#4CAF50">${i.cals}</b>
+                    <button class="del-btn" onclick="removeLog(${i.id})" style="background:none; border:none; color:red; margin-left:10px;">×</button>
                 </div>
             </div>
         `).join('');
@@ -190,20 +206,28 @@ function renderDashboard() {
 
 function renderProfileList() {
     document.getElementById('profile-list').innerHTML = db.profiles.map((p, i) => `
-        <div class="profile-item" onclick="selectProfile(${i})" style="padding:15px; background:#f0f0f0; margin-bottom:10px; border-radius:10px; cursor:pointer;">
+        <div class="profile-item" onclick="selectProfile(${i})" style="padding:15px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border: 1px solid #eee;">
             <b>${p.name}</b><br><small>${p.weight}kg | Goal: ${p.dailyGoal} kcal</small>
         </div>
     `).join('');
 }
 
-window.selectProfile = (i) => { db.activeIndex = i; saveAndRefresh(); };
+function startTicker() {
+    let i = 0;
+    const ticker = document.getElementById('news-ticker');
+    setInterval(() => {
+        ticker.innerText = `RESEARCH: ${facts[i]}`;
+        i = (i + 1) % facts.length;
+    }, 7000);
+}
 
 function saveAndRefresh() {
     localStorage.setItem('bio_vault', JSON.stringify(db));
     location.reload(); 
 }
 
-document.getElementById('manager-btn').onclick = showManager;
+// Bindings
+document.getElementById('manager-btn').onclick = window.showManager;
 document.getElementById('search-btn').onclick = window.searchFood;
 
 init();
