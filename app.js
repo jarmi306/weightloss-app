@@ -166,7 +166,76 @@ function saveAndRefresh() {
     localStorage.setItem('bio_vault', JSON.stringify(db));
     init();
 }
+let tempFood = null; // Holds the food you clicked until you confirm grams
 
+window.searchFood = async () => {
+    const query = document.getElementById('query').value;
+    const resultsDiv = document.getElementById('search-results');
+    if (!query) return;
+
+    resultsDiv.innerHTML = "<p>Searching...</p>";
+    
+    try {
+        const res = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${API_KEY}&query=${query}&pageSize=5`);
+        const data = await res.json();
+        
+        // Build the dropdown results
+        resultsDiv.innerHTML = data.foods.map(food => {
+            const cals = food.foodNutrients.find(n => n.nutrientId === 1008)?.value || 0;
+            return `
+                <div class="result-item" onclick="openPortionModal('${escape(food.description)}', ${cals})">
+                    <span>${food.description}</span>
+                    <small>${cals} kcal/100g</small>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        resultsDiv.innerHTML = "<p>Error connecting to USDA.</p>";
+    }
+};
+
+window.openPortionModal = (name, cals) => {
+    tempFood = { name: unescape(name), calsPer100: cals };
+    document.getElementById('selected-food-name').innerText = tempFood.name;
+    document.getElementById('cal-info').innerText = `${cals} kcal per 100g`;
+    document.getElementById('portion-modal').style.display = 'flex';
+    document.getElementById('search-results').innerHTML = ""; // Clear dropdown
+};
+
+window.confirmLog = () => {
+    const grams = Number(document.getElementById('grams-input').value);
+    const meal = document.getElementById('meal-type').value;
+    const calculatedCals = Math.round(tempFood.calsPer100 * (grams / 100));
+
+    const activeUser = db.profiles[db.activeIndex];
+    activeUser.eaten += calculatedCals;
+    
+    // Log with specific meal type and unique ID for removal
+    activeUser.log.unshift({
+        id: Date.now(),
+        name: tempFood.name,
+        cals: calculatedCals,
+        grams: grams,
+        meal: meal
+    });
+
+    closeModal();
+    saveAndRefresh();
+};
+
+window.removeLog = (id) => {
+    const activeUser = db.profiles[db.activeIndex];
+    const item = activeUser.log.find(i => i.id === id);
+    if (item) {
+        activeUser.eaten -= item.cals;
+        activeUser.log = activeUser.log.filter(i => i.id !== id);
+        saveAndRefresh();
+    }
+};
+
+window.closeModal = () => {
+    document.getElementById('portion-modal').style.display = 'none';
+};
 // --- EVENT LISTENERS ---
 document.getElementById('manager-btn').onclick = showManager;
 document.getElementById('search-btn').onclick = window.searchFood;

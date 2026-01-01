@@ -165,3 +165,45 @@ input, select {
     cursor: pointer;
     border: 1px solid #eee;
 }
+/* Dropdown Results */
+.results-dropdown {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 5px;
+}
+.result-item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+.result-item:hover { background: #f8fafc; }
+
+/* Modal Overlay */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px;
+}
+
+/* Meal Sections */
+.meal-block {
+    margin-top: 15px;
+    background: #fdfdfd;
+    padding: 10px;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+}
+.meal-block h5 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 0.75rem; color: var(--text-sub); }
+
+.log-item {
+    display: flex; justify-content: space-between; font-size: 0.9rem; padding: 5px 0;
+}
+.delete-btn { color: #ff4444; border: none; background: none; cursor: pointer; font-size: 1.1rem; }

@@ -96,12 +96,43 @@
             </div>
 
             <div class="search-section">
-                <h3>Log Nutrition</h3>
-                <div class="search-bar">
-                    <input type="text" id="query" placeholder="Search food (e.g. Oats)">
-                    <button id="search-btn">Add</button>
-                </div>
-            </div>
+    <h3>Log Nutrition</h3>
+    <div class="search-bar">
+        <input type="text" id="query" placeholder="Search (e.g. Whole Wheat Bread)">
+        <button id="search-btn">Search</button>
+    </div>
+    <div id="search-results" class="results-dropdown"></div>
+</div>
+
+<div id="portion-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h4 id="selected-food-name">Food Name</h4>
+        <p><small id="cal-info">0 kcal per 100g</small></p>
+        
+        <label>Amount (grams)</label>
+        <input type="number" id="grams-input" value="100">
+        
+        <label>Meal Type</label>
+        <select id="meal-type">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snacks">Snacks</option>
+        </select>
+        
+        <div class="modal-btns">
+            <button onclick="closeModal()" class="cancel-btn">Cancel</button>
+            <button onclick="confirmLog()" class="primary-btn">Add to Log</button>
+        </div>
+    </div>
+</div>
+
+<div id="meal-logs" class="meal-container">
+    <div class="meal-block"><h5>Breakfast</h5><div id="log-breakfast"></div></div>
+    <div class="meal-block"><h5>Lunch</h5><div id="log-lunch"></div></div>
+    <div class="meal-block"><h5>Dinner</h5><div id="log-dinner"></div></div>
+    <div class="meal-block"><h5>Snacks</h5><div id="log-snacks"></div></div>
+</div>
 
             <div id="log-list" class="daily-log">
                 </div>
