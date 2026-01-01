@@ -1,6 +1,6 @@
 import { calculateTDEE } from './math.js';
 
-const API_KEY = 'DEMO_KEY'; // Replace with your key for higher limits
+const API_KEY = 'LEqFvTAubP3u0ftrVH4bidUvtaQzCMCsuHIt9D1j'; // Replace with your key for higher limits
 let user = JSON.parse(localStorage.getItem('bio_user')) || null;
 
 const setupPage = document.getElementById('setup-page');
