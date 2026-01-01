@@ -1,25 +1,20 @@
-export const calculateTDEE = (profile) => {
-    const { weight, height, age, gender, activity } = profile;
-    
-    // Mifflin-St Jeor Equation
-    let bmr;
-    if (gender === 'male') {
-        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-    } else {
-        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
-    }
+export const calculateTDEE = (p) => {
+    // 1. Calculate Basal Metabolic Rate (BMR)
+    let bmr = (10 * p.weight) + (6.25 * p.height) - (5 * p.age);
+    bmr = (p.gender === 'male') ? bmr + 5 : bmr - 161;
 
-    const activityFactors = {
-        sedentary: 1.2,      // Little exercise
-        light: 1.375,        // 1-3 days/week
-        moderate: 1.55,      // 3-5 days/week
-        active: 1.725        // 6-7 days/week
+    // 2. Adjust for Activity Level
+    const factors = { 
+        sedentary: 1.2,    // No exercise
+        moderate: 1.55,    // 3-5 days/week
+        active: 1.725      // 6-7 days/week
     };
-
-    return Math.round(bmr * activityFactors[activity]);
-};
-
-export const getTargetCalories = (tdee, intensity) => {
-    // intensity: 0 (maintain), 500 (standard loss), 1000 (aggressive loss)
-    return tdee - intensity;
+    
+    const tdee = Math.round(bmr * (factors[p.activity] || 1.2));
+    
+    // 3. Subtract 500 calories for 0.5kg/week safe loss
+    return {
+        maintenance: tdee,
+        target: tdee - 500
+    };
 };

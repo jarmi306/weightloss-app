@@ -1,13 +1,126 @@
-:root { --green: #4CAF50; --bg: #f9f9f9; --text: #333; }
-body { background: var(--bg); font-family: sans-serif; color: var(--text); padding: 20px; }
-.container { max-width: 400px; margin: auto; }
-.card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-button { background: var(--green); color: white; font-weight: bold; border: none; }
-.progress-circle { width: 140px; height: 140px; border: 8px solid var(--green); border-radius: 50%; margin: 0 auto 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-#cals-remaining { font-size: 2rem; font-weight: bold; }
-body { background: #f0f2f5; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-.card { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-button { background: #4CAF50; color: white; border: none; font-weight: bold; cursor: pointer; }
-.circle { width: 180px; height: 180px; border: 10px solid #4CAF50; border-radius: 50%; margin: 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+/* style.css */
+:root {
+    --primary: #4CAF50;
+    --primary-light: #e8f5e9;
+    --bg: #f4f7f6;
+    --card: #ffffff;
+    --text-main: #2c3e50;
+    --text-sub: #7f8c8d;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+/* Setup Form Styling */
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+    background: #f8fafc;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Dashboard Circle */
+.circle-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.progress-circle {
+    width: 200px;
+    height: 200px;
+    border: 12px solid var(--primary-light);
+    border-top: 12px solid var(--primary); /* Visual "progress" indicator */
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--card);
+}
+
+#cals-left {
+    font-size: 2.8rem;
+    margin: 0;
+    color: var(--primary);
+}
+
+/* News Ticker */
+.ticker {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Search Section */
+.search-bar {
+    display: flex;
+    gap: 10px;
+}
+
+.search-bar input {
+    flex: 3;
+}
+
+.search-bar button {
+    flex: 1;
+    background: var(--text-main);
+    color: white;
+    border: none;
+    border-radius: 12px;
+}
