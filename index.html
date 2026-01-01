@@ -3,143 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioWeight | Smart Research-Backed Tracker</title>
+    <title>BioWeight | Smart Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
-        
         <div id="profile-nav" class="profile-header" style="display: none;">
-            <div class="active-user">
-                <span class="user-dot"></span>
-                <span id="current-user-name">User</span>
-            </div>
-            <button id="manager-btn" class="mini-btn">Switch Profile</button>
+            <div><span class="user-dot"></span> <span id="current-user-name">User</span></div>
+            <button id="manager-btn" class="mini-btn">Switch</button>
         </div>
 
         <div id="setup-page" class="card">
-            <header>
-                <h2>Create Profile</h2>
-                <p>Calculated via <b>Mifflin-St Jeor</b> research.</p>
-            </header>
-            
+            <h2>Create Profile</h2>
             <form id="user-form">
-                <div class="input-group">
-                    <label>Profile Name</label>
-                    <input type="text" id="profile-name" placeholder="e.g. Personal, Client A" required>
-                </div>
-
-                <div class="input-group">
-                    <label>Current Age</label>
-                    <input type="number" id="age" placeholder="25" required>
-                </div>
-
-                <div class="input-group">
-                    <label>Height (cm)</label>
-                    <input type="number" id="height" placeholder="175" required>
-                </div>
-
-                <div class="input-group">
-                    <label>Current Weight (kg)</label>
-                    <input type="number" id="weight" placeholder="80" required>
-                </div>
-
-                <div class="input-group">
-                    <label>Gender</label>
-                    <select id="gender">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>Activity Level</label>
-                    <select id="activity">
-                        <option value="sedentary">Sedentary (Office job)</option>
-                        <option value="moderate">Moderate (Active 3-5x/week)</option>
-                        <option value="active">High (Daily athlete)</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="primary-btn">Save & Start</button>
+                <input type="text" id="profile-name" placeholder="Profile Name" required>
+                <input type="number" id="age" placeholder="Age" required>
+                <input type="number" id="height" placeholder="Height (cm)" required>
+                <input type="number" id="weight" placeholder="Weight (kg)" required>
+                <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
+                <select id="activity">
+                    <option value="sedentary">Sedentary</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="active">Active</option>
+                </select>
+                <button type="submit" class="primary-btn">Start</button>
             </form>
         </div>
 
         <div id="profile-manager" class="card" style="display:none;">
-            <h3>Switch Profiles</h3>
-            <div id="profile-list" class="profile-stack">
-                </div>
-            <button onclick="showSetup()" class="add-btn">+ Add New Profile</button>
+            <h3>Profiles</h3>
+            <div id="profile-list"></div>
+            <button onclick="showSetup()" class="primary-btn">+ New</button>
         </div>
 
         <div id="main-app" class="card" style="display:none;">
-            <div id="news-ticker" class="ticker">
-                ANALYZING: Caloric deficit is the primary driver of fat loss.
-            </div>
-
+            <div id="news-ticker" class="ticker">RESEARCH: Caloric deficit drives fat loss.</div>
             <div class="circle-container">
-                <div class="progress-circle">
-                    <h1 id="cals-left">0</h1>
-                    <span>kcal remaining</span>
-                </div>
+                <div class="progress-circle"><h1 id="cals-left">0</h1><span>kcal left</span></div>
             </div>
-
             <div class="stats-row">
-                <div class="stat-item">
-                    <small>Daily Goal</small>
-                    <b id="daily-goal-text">0</b>
-                </div>
-                <div class="stat-item">
-                    <small>Food Eaten</small>
-                    <b id="eaten-text">0</b>
-                </div>
+                <div class="stat-item"><small>Goal</small><br><b id="daily-goal-text">0</b></div>
+                <div class="stat-item"><small>Eaten</small><br><b id="eaten-text">0</b></div>
             </div>
 
             <div class="search-section">
-    <h3>Log Nutrition</h3>
-    <div class="search-bar">
-        <input type="text" id="query" placeholder="Search (e.g. Whole Wheat Bread)">
-        <button id="search-btn">Search</button>
-    </div>
-    <div id="search-results" class="results-dropdown"></div>
-</div>
+                <div class="search-bar">
+                    <input type="text" id="query" placeholder="Search (e.g. Bread)">
+                    <button id="search-btn">Find</button>
+                </div>
+                <div id="search-results" class="results-dropdown"></div>
+            </div>
 
-<div id="portion-modal" class="modal" style="display:none;">
-    <div class="modal-content">
-        <h4 id="selected-food-name">Food Name</h4>
-        <p><small id="cal-info">0 kcal per 100g</small></p>
-        
-        <label>Amount (grams)</label>
-        <input type="number" id="grams-input" value="100">
-        
-        <label>Meal Type</label>
-        <select id="meal-type">
-            <option value="breakfast">Breakfast</option>
-            <option value="lunch">Lunch</option>
-            <option value="dinner">Dinner</option>
-            <option value="snacks">Snacks</option>
-        </select>
-        
-        <div class="modal-btns">
-            <button onclick="closeModal()" class="cancel-btn">Cancel</button>
-            <button onclick="confirmLog()" class="primary-btn">Add to Log</button>
+            <div class="meal-container">
+                <div class="meal-block"><h5>Breakfast</h5><div id="log-breakfast"></div></div>
+                <div class="meal-block"><h5>Lunch</h5><div id="log-lunch"></div></div>
+                <div class="meal-block"><h5>Dinner</h5><div id="log-dinner"></div></div>
+                <div class="meal-block"><h5>Snacks</h5><div id="log-snacks"></div></div>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="meal-logs" class="meal-container">
-    <div class="meal-block"><h5>Breakfast</h5><div id="log-breakfast"></div></div>
-    <div class="meal-block"><h5>Lunch</h5><div id="log-lunch"></div></div>
-    <div class="meal-block"><h5>Dinner</h5><div id="log-dinner"></div></div>
-    <div class="meal-block"><h5>Snacks</h5><div id="log-snacks"></div></div>
-</div>
-
-            <div id="log-list" class="daily-log">
-                </div>
-
-            <button onclick="localStorage.clear(); location.reload();" class="reset-btn">
-                Wipe Local Storage
-            </button>
+    <div id="portion-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h4 id="selected-food-name"></h4>
+            <div class="input-row" style="display:flex; gap:10px;">
+                <input type="number" id="amount-input" value="1">
+                <select id="unit-selector">
+                    <option value="units">Units (pcs)</option>
+                    <option value="grams">Grams (g)</option>
+                </select>
+            </div>
+            <select id="meal-type">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snacks">Snacks</option>
+            </select>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button onclick="closeModal()" style="background:#eee;">Cancel</button>
+                <button onclick="confirmLog()" class="primary-btn">Log</button>
+            </div>
         </div>
     </div>
 
