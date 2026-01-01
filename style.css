@@ -124,3 +124,44 @@ input, select {
     border: none;
     border-radius: 12px;
 }
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.user-dot {
+    height: 8px;
+    width: 8px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.mini-btn {
+    background: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.profile-stack {
+    margin: 15px 0;
+}
+
+.profile-item {
+    padding: 15px;
+    background: #f8f9fa;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #eee;
+}

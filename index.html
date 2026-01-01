@@ -8,30 +8,44 @@
 </head>
 <body>
     <div class="app-container">
+        
+        <div id="profile-nav" class="profile-header" style="display: none;">
+            <div class="active-user">
+                <span class="user-dot"></span>
+                <span id="current-user-name">User</span>
+            </div>
+            <button id="manager-btn" class="mini-btn">Switch Profile</button>
+        </div>
+
         <div id="setup-page" class="card">
             <header>
-                <h2>Bio-Profile</h2>
-                <p>Based on the <b>Mifflin-St Jeor</b> clinical formula.</p>
+                <h2>Create Profile</h2>
+                <p>Calculated via <b>Mifflin-St Jeor</b> research.</p>
             </header>
             
             <form id="user-form">
                 <div class="input-group">
-                    <label for="age">Current Age</label>
-                    <input type="number" id="age" placeholder="e.g. 25" required>
+                    <label>Profile Name</label>
+                    <input type="text" id="profile-name" placeholder="e.g. Personal, Client A" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="height">Height (cm)</label>
-                    <input type="number" id="height" placeholder="e.g. 175" required>
+                    <label>Current Age</label>
+                    <input type="number" id="age" placeholder="25" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="weight">Current Weight (kg)</label>
-                    <input type="number" id="weight" placeholder="e.g. 80" required>
+                    <label>Height (cm)</label>
+                    <input type="number" id="height" placeholder="175" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="gender">Gender</label>
+                    <label>Current Weight (kg)</label>
+                    <input type="number" id="weight" placeholder="80" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Gender</label>
                     <select id="gender">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
@@ -39,21 +53,28 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="activity">Activity Level</label>
+                    <label>Activity Level</label>
                     <select id="activity">
-                        <option value="sedentary">Sedentary (Little to no exercise)</option>
-                        <option value="moderate">Moderate (Exercise 3-5 days/week)</option>
-                        <option value="active">Very Active (Hard exercise daily)</option>
+                        <option value="sedentary">Sedentary (Office job)</option>
+                        <option value="moderate">Moderate (Active 3-5x/week)</option>
+                        <option value="active">High (Daily athlete)</option>
                     </select>
                 </div>
 
-                <button type="submit" class="primary-btn">Generate My Plan</button>
+                <button type="submit" class="primary-btn">Save & Start</button>
             </form>
+        </div>
+
+        <div id="profile-manager" class="card" style="display:none;">
+            <h3>Switch Profiles</h3>
+            <div id="profile-list" class="profile-stack">
+                </div>
+            <button onclick="showSetup()" class="add-btn">+ Add New Profile</button>
         </div>
 
         <div id="main-app" class="card" style="display:none;">
             <div id="news-ticker" class="ticker">
-                Loading research data...
+                ANALYZING: Caloric deficit is the primary driver of fat loss.
             </div>
 
             <div class="circle-container">
@@ -86,7 +107,7 @@
                 </div>
 
             <button onclick="localStorage.clear(); location.reload();" class="reset-btn">
-                Reset All Data
+                Wipe Local Storage
             </button>
         </div>
     </div>
